@@ -1,0 +1,17 @@
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.bcf
+*.log
+*.nav
+*.xml
+*.snm
+*.toc
+*.out
+*.bbl
+*.blg
+
+# Temporary files
+*.bkp
+*.tmp
+*.bak
+*.vrb
