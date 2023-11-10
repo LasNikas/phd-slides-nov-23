@@ -1,0 +1,103 @@
+\section{Smoothed Particle Hydrodynamics (SPH)}
+
+\begin{frame}
+    \frametitle{What is SPH?}
+
+    \begin{quote}
+       \glqq{}A mesh"=free method for the discretization of functions and partial differential operators.\grqq{} \cite{SPH_Tutorial_2019}
+    \end{quote}
+
+    \begin{columns}[T] % align columns
+        \begin{column}{.4\textwidth}
+            % ==============================================================
+            % ==== Linke Seite
+
+            \vspace*{0.2cm}
+            \begin{itemize}
+                \item Lagrangian approach
+            \end{itemize}
+
+            \vspace*{1.6cm}
+
+            \begin{itemize}
+                \item Discretization of functions $A_i$ and fields $\bmt{A}_i$ based on a kernel $W$ interpolation.
+            \end{itemize}
+            \vspace*{1.2cm}
+
+            \begin{itemize}
+                \item Approximation of differential operators by exact derivative of the kernel function \cite{Price2012}.
+            \end{itemize}
+            % ==============================================================
+        \end{column}
+        \hfill
+        \begin{column}{.6\textwidth}
+            % ==============================================================
+            % ==== Rechte Seite
+            \begin{figure}[h]
+                \centering
+                \def\svgwidth{0.25\textwidth}
+                \input{graphics/sph/lagragian.pdf_tex}
+                \label{fig: lagragian}
+            \end{figure}
+            \vspace*{0.3cm}
+
+            \begin{figure}[h]
+                \centering
+                \def\svgwidth{0.5\textwidth}
+                \input{graphics/sph/functions_and_fields.pdf_tex}
+                \label{fig: function and fields}
+            \end{figure}
+
+            \begin{align}
+                    A(\bmt{r}) &\approx \int A(\bmt{r}') W(\bmt{r}-\bmt{r}', h) \mathrm{d}\bmt{r}' \\
+                    \nabla A(\bmt{r}) &\approx \int A(\bmt{r}') \nabla W(\bmt{r}-\bmt{r}', h) \mathrm{d}\bmt{r}'
+            \end{align}
+            % ==============================================================
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+	\frametitle{SPH discretization}
+
+    \begin{columns}[T] % align columns
+        \begin{column}{.6\textwidth}
+            % ==============================================================
+            % ==== Linke Seite
+            \begin{itemize}
+                \item Interpolating through a convolution integral \cite{Price2012}:
+            \end{itemize}
+            \begin{align}
+                    (A * W)(\bmt{r}_i) &=
+                    \int \frac{A(\bmt{r}')}{\rho (\bmt{r}')} W(\bmt{r}_i-\bmt{r}', h) \underbrace{\rho (\bmt{r}')\mathrm{d}\bmt{r}'}_{\mathrm{d}m'}\\
+                    &\approx \sum_{b \in \mathcal{N}} A_b \frac{m_b}{\rho (\bmt{r}_b)} W(\underbrace{\bmt{r}_a-\bmt{r}_b}_{\bmt{r}_{ab}}, h)
+            \end{align}
+            \begin{itemize}
+                \item The density is computed using a weighted summation over neighboring particles:
+            \end{itemize}
+            \begin{align}
+                    \rho(\bmt{r}_a) =  \sum_{b \in \mathcal{N}} m_b W(\bmt{r}_{ab}, h)
+            \end{align}
+            % ==============================================================
+        \end{column}
+        \hfill
+        \begin{column}{.3\textwidth}
+            % ==============================================================
+            % ==== Rechte Seite
+            \begin{figure}[h]
+                \centering
+                \def\svgwidth{\textwidth}
+                \input{graphics/sph/integral_to_sum.pdf_tex}
+                \label{fig: integral to sum}
+            \end{figure}
+            \begin{figure}[b!]
+                \centering
+                \def\svgwidth{0.7\textwidth}
+                \input{graphics/sph/density_calculation.pdf_tex}
+                \label{fig: density calculation}
+            \end{figure}
+            % ==============================================================
+        \end{column}
+    \end{columns}
+
+\end{frame}

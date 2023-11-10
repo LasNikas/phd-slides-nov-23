@@ -1,0 +1,112 @@
+\section{Backup}
+\begin{frame}
+    \frametitle{SPH discretization (fluid)}
+    \begin{columns}[T] % align columns
+        \begin{column}{.4\textwidth}
+            % ==============================================================
+            % ==== Linke Seite
+            The governing equations in a Lagrangian framework read as
+            \begin{align}
+                \label{euler dv}
+                \td{\ten{v}}{t} & = - \frac{1}{\rho} \nabla p + \frac{1}{\rho} \ten{F}^{(\nu)}
+                +
+                \ten{g},
+                \\
+                \label{euler drho}
+                \td{\rho}{t}    & = -\rho \nabla \cdot \ten{v},
+                \\
+                \td{\ten{r}}{t} & = \ten{v},
+                \\
+                p               & = F(\rho) \: .
+            \end{align}
+            % ==============================================================
+        \end{column}
+        \hfill
+        \begin{column}{.5\textwidth}
+            % ==============================================================
+            % ==== Rechte Seite
+            Using Monaghans \cite{Monaghan2005} SPH interpolation rules, eq. (\ref{euler dv})
+            and (\ref{euler drho}) become
+            \begin{align}
+                \td{\ten{v}_a}{t} & = - \sum_{b \in \mathcal{N}}m_b
+                \left(\frac{p_b}{\rho_b^2}+\frac{p_a}{\rho_a^2} +
+                \underbrace{\Pi_{ab}}_{\text{viscosity}}
+                \right) \nabla_a W_{ab} + \ten{g},
+                \\
+                \label{sph dv}
+                \td{\rho_a}{t}    & = \sum_{b \in \mathcal{N}} m_b (v_a - v_b) \cdot \nabla_a
+                W_{ab}	\: .
+            \end{align}
+            % ==============================================================
+        \end{column}
+    \end{columns}
+    \vspace{1cm}
+    The equation of state to describe the relationship between pressure and density of water up
+    to high pressures is given as
+    \begin{align}
+        p =\frac{\rho_0 c^2}{\gamma} \left(\left(\frac{\rho}{\rho_0}\right)^\gamma - 1\right) +
+        p_0 - p_{\text{background}}
+    \end{align}
+\end{frame}
+
+\begin{frame}
+    \frametitle{SPH discretization (solid)}
+
+    The conservation equation of linear momentum is given by
+    \begin{align}
+        \frac{\mathrm{d} \ten{v}}{\mathrm{d}t} & = \frac{1}{\rho} \nabla_0 \ten{P}\T +
+        \ten{g} \: ,
+        \label{conservation momentum}
+    \end{align}
+    where $\ten{P}$ is the first Piola-Kirchhoff (PK1) stress tensor. \\
+    \vspace*{0.5cm}
+    The discretized version of this equation is given by O'Connor et al
+    \cite{O_Connor_2021}:
+    \begin{align}
+        \td{\ten{v}_a}{t} = \sum_{b\in \mathcal{N}} m_{0b}
+        \left( \frac{\ten{P}_a \ten{L}_{0a}}{\rho_{0a}^2} + \frac{\ten{P}_b
+            \ten{L}_{0b}}{\rho_{0b}^2} \right)
+        \nabla_{0a} W(\ten{X}_{ab}) +
+        \underbrace{\frac{\ten{f}_a^{PF}}{m_{0a}}}_{\text{optional penalty force}} + \:
+        \ten{g},
+    \end{align}
+    %penalty force: Korrigierende Kraft, um hourglass modes (FEM: Unterintegrierten Elementen) zu verhindern.
+    with the inverse correction (renormalisation) matrix
+    % to handle an incomplete kernel support at the edges of the domain.
+    \begin{align}
+        \ten{L}_{0a} := \left( \sum_{b \in \mathcal{N}} \frac{m_{0b}}{\rho_{0b}}
+        \nabla_{0a}
+        W(\ten{X}_{ab}) \ten{X}_{ab}^T \right)^{-1} \in \R^{d \times d}.
+    \end{align}
+    The difference in the initial (reference) configuration is denoted as $\ten{X}_{ab}
+        = \ten{X}_a - \ten{X}_b$ .
+\end{frame}
+
+\begin{frame}
+    \frametitle{PK1 stress tensor}
+    For the computation of the PK1 stress tensor, the deformation gradient $\ten{J}$ is
+    computed per particle as
+    \begin{align}
+        \ten{J}_a = \sum_b \frac{m_{0b}}{\rho_{0b}} \ten{x}_{ba} (\ten{L}_{0a}\nabla_{0a}
+        W(\ten{X}_{ab}))^T
+    \end{align}
+    with $1 \leq i,j \leq d$.
+    From the deformation gradient, the Green-Lagrange strain
+    \begin{align}
+        \ten{E} = \frac{1}{2}(\ten{J}^T\ten{J} - \ten{I})
+    \end{align}
+    and the second Piola-Kirchhoff stress tensor
+    \begin{align}
+        \ten{S} = \lambda \operatorname{tr}(\ten{E}) \ten{I} + 2\mu \ten{E}
+    \end{align}
+    are computed to obtain the PK1 stress tensor as $\ten{P} = \ten{J}\ten{S}$.
+    Here,
+    \begin{align}
+        \mu = \frac{E}{2(1 + \nu)}\qquad \text{and} \qquad \lambda = \frac{E\nu}{(1 +
+            \nu)(1 -
+            2\nu)}
+    \end{align}
+    are the Lamé coefficients, where $E$ is the Young's modulus and $\nu$ is the Poisson
+    ratio.
+
+\end{frame}

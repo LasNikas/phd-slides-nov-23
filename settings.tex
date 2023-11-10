@@ -1,0 +1,48 @@
+\documentclass[8pt, aspectratio=169, table]{beamer}
+%\setbeameroption{show notes on second screen=right} % Both
+%\setbeameroption{show only notes}
+%\setbeameroption{hide notes} % Only slides
+
+\usetheme[image=1]{hlrs2}
+
+\usepackage[ngerman]{babel}
+
+\addbibresource{literature.bib}
+
+% ===============================================================================
+% ===== Additional packages
+
+% Enumerate with multiple levels (like `itemize`)
+\usepackage{outlines}
+
+% hyperref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=,
+    citecolor=,
+    filecolor=hlrsBlue,
+    urlcolor=hlrsBlue,
+    }
+
+% ===============================================================================
+% ===== Graphics paths
+% ==== Math:
+%\input{settings/commands}
+% Differential
+\newcommand{\diff}[1][]{\,\mathrm{d}#1}
+\newcommand{\dt}{\diff{t}}
+
+% Partial derivative
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+% Total derivative
+\newcommand{\td}[2]{\frac{\mathrm{D} #1}{\mathrm{D} #2}}
+
+% ==== Graphic
+\graphicspath{{graphics/}{graphics/sph/}}
+
+% include `pdf+LaTeX` file from InkScape
+\usepackage{import}
+\newcommand{\incfig}[3][\columnwidth]{%
+    \def\svgwidth{#1}
+    \import{./graphics/#2}{#3.pdf_tex}
+}
