@@ -4,7 +4,8 @@
     \frametitle{What is SPH?}
 
     \begin{quote}
-       \glqq{}A mesh"=free method for the discretization of functions and partial differential operators.\grqq{} \cite{SPH_Tutorial_2019}
+        \glqq{}A mesh"=free method for the discretization of functions and partial
+        differential operators.\grqq{} \cite{SPH_Tutorial_2019}
     \end{quote}
 
     \begin{columns}[T] % align columns
@@ -20,12 +21,14 @@
             \vspace*{1.6cm}
 
             \begin{itemize}
-                \item Discretization of functions $A_i$ and fields $\bmt{A}_i$ based on a kernel $W$ interpolation.
+                \item Discretization of functions $A_i$ and fields $\bmt{A}_i$ based on a
+                      kernel $W$ interpolation.
             \end{itemize}
             \vspace*{1.2cm}
 
             \begin{itemize}
-                \item Approximation of differential operators by exact derivative of the kernel function \cite{Price2012}.
+                \item Approximation of differential operators by exact derivative of the
+                      kernel function \cite{Price2012}.
             \end{itemize}
             % ==============================================================
         \end{column}
@@ -49,8 +52,10 @@
             \end{figure}
 
             \begin{align}
-                    A(\bmt{r}) &\approx \int A(\bmt{r}') W(\bmt{r}-\bmt{r}', h) \mathrm{d}\bmt{r}' \\
-                    \nabla A(\bmt{r}) &\approx \int A(\bmt{r}') \nabla W(\bmt{r}-\bmt{r}', h) \mathrm{d}\bmt{r}'
+                A(\bmt{r})        & \approx \int A(\bmt{r}') W(\bmt{r}-\bmt{r}', h)
+                \mathrm{d}\bmt{r}'                                                      \\
+                \nabla A(\bmt{r}) & \approx \int A(\bmt{r}') \nabla W(\bmt{r}-\bmt{r}',
+                h) \mathrm{d}\bmt{r}'
             \end{align}
             % ==============================================================
         \end{column}
@@ -58,7 +63,7 @@
 \end{frame}
 
 \begin{frame}
-	\frametitle{SPH discretization}
+    \frametitle{SPH discretization}
 
     \begin{columns}[T] % align columns
         \begin{column}{.6\textwidth}
@@ -68,15 +73,20 @@
                 \item Interpolating through a convolution integral \cite{Price2012}:
             \end{itemize}
             \begin{align}
-                    (A * W)(\bmt{r}_i) &=
-                    \int \frac{A(\bmt{r}')}{\rho (\bmt{r}')} W(\bmt{r}_i-\bmt{r}', h) \underbrace{\rho (\bmt{r}')\mathrm{d}\bmt{r}'}_{\mathrm{d}m'}\\
-                    &\approx \sum_{b \in \mathcal{N}} A_b \frac{m_b}{\rho (\bmt{r}_b)} W(\underbrace{\bmt{r}_a-\bmt{r}_b}_{\bmt{r}_{ab}}, h)
+                (A * W)(\bmt{r}_i) & =
+                \int \frac{A(\bmt{r}')}{\rho (\bmt{r}')} W(\bmt{r}_i-\bmt{r}', h)
+                \underbrace{\rho (\bmt{r}')\mathrm{d}\bmt{r}'}_{\mathrm{d}m'}
+                \\
+                                   & \approx \sum_{b \in \mathcal{N}} A_b \frac{m_b}{\rho
+                    (\bmt{r}_b)}
+                W(\underbrace{\bmt{r}_a-\bmt{r}_b}_{\bmt{r}_{ab}}, h)
             \end{align}
             \begin{itemize}
-                \item The density is computed using a weighted summation over neighboring particles:
+                \item The density is computed using a weighted summation over neighboring
+                      particles:
             \end{itemize}
             \begin{align}
-                    \rho(\bmt{r}_a) =  \sum_{b \in \mathcal{N}} m_b W(\bmt{r}_{ab}, h)
+                \rho(\bmt{r}_a) =  \sum_{b \in \mathcal{N}} m_b W(\bmt{r}_{ab}, h)
             \end{align}
             % ==============================================================
         \end{column}
@@ -99,5 +109,64 @@
             % ==============================================================
         \end{column}
     \end{columns}
+
+\end{frame}
+
+\setbeamertemplate{frame footer}{\cite{O_Connor_2021}}
+\begin{frame}
+    \frametitle{Fluid Structure Interaction (FSI)}
+    Interaction of fluid particle $a$ with sets of other particles containing the
+    neighboring
+    fluid, boundary and structure particles:
+    \begin{align*}
+        \td{\ten{v}_a}{t} = & - \sum_{b \in \mathcal{N}_{\text{fluid}}}m_b
+        \left(\frac{p_b}{\rho_b^2}+\frac{p_a}{\rho_a^2} +
+        \underbrace{\Pi_{ab}}_{\text{viscosity}}
+        \right) \nabla_a W_{ab}                                                \\
+                            & - \sum_{b \in \mathcal{N}_{\text{boundary}}}m_b
+        \left(\frac{p_b}{\rho_b^2}+\frac{p_a}{\rho_a^2} +
+        \Pi_{ab}\right) \nabla_a W_{ab}
+        \\
+                            & - \sum_{b \in \mathcal{N}_{\text{structure}}}m_b
+        \left(\frac{p_b}{\rho_b^2}+\frac{p_a}{\rho_a^2} +
+        \Pi_{ab}\right) \nabla_a W_{ab} + \ten{g}
+    \end{align*}
+\end{frame}
+\begin{frame}
+    \frametitle{Fluid Structure Interaction (FSI)}
+    Interaction of structure particle $a$ with sets of other particles containing the
+    neighboring
+    fluid and structure particles:
+    \begin{align*}
+        \td{\ten{v}_a}{t} = & - \frac{m_a}{m_{0a}}\sum_{b \in
+        \mathcal{N}_{\text{fluid}}}m_b
+        \left(\frac{p_b}{\rho_b^2}+\frac{p_a}{\rho_a^2} +
+        \Pi_{ab}
+        \right) \nabla_a W_{ab}
+        \\
+                            & +\sum_{b\in \mathcal{N}_{\text{structure}}} m_{0b}
+        \left( \frac{\ten{P}_a \ten{L}_{0a}}{\rho_{0a}^2} + \frac{\ten{P}_b
+            \ten{L}_{0b}}{\rho_{0b}^2} \right)
+        \nabla_{0a} W(\ten{X}_{ab}) +
+        \underbrace{\frac{\ten{f}_a^{PF}}{m_{0a}}}_{\text{optional penalty force}} + \:
+        \ten{g}
+    \end{align*}
+    where $m_a$ and $\rho_a$ refer to the hydrodynamic mass and density of a structure
+    particle. Whereas $m_{0a}$ and $\rho_{0a}$ refer to the material mass and density of
+    structure particle $a$. And $\ten{P}$ is the first Piola-Kirchhoff (PK1) stress tensor.
+\end{frame}
+\setbeamertemplate{frame footer}{}
+
+\begin{frame}
+    \frametitle{Problem - Pressure field of structure and boundary}
+    \texttt{TrixiParticles.jl} provides five options to compute the hydrodynamic boundary (structure) density and
+    pressure. The one which usually yields the best results is described in
+    \cite{Adami_2012}. The pressure of a boundary (structure) particle is obtained by
+    extrapolating the pressure of the fluid:
+    \begin{align}
+        p_{\text{solid}} = \frac{\sum_\text{fluid} (p_\text{fluid} + \rho_\text{fluid} (\bm{g} - \bm{a}_{\text{solid}}) \cdot \ten{x}_{\text{solid-fluid}}) W(
+            \ten{x}_{\text{solid-fluid}} )}{\sum_\text{fluid} W( \ten{x}_{\text{solid-fluid}})},
+    \end{align}
+    The hydrodynamic density for boundary and structure is then obtained by the inverse equation of state.
 
 \end{frame}
